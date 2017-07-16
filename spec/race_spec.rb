@@ -45,6 +45,7 @@ RSpec.describe RaceBet::Race do # rubocop:disable Metrics/BlockLength
     it { expect(subject).to eq(3) }
   end
 
+  # NOTE: This one is passing because bet is in top 5 not bause the 5th place
   context '1 point for fifth place' do
     let(:winners) { [:loser, :loser, :loser, :loser, guesses[4]] }
 
