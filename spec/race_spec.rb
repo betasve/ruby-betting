@@ -17,6 +17,20 @@ RSpec.describe RaceBet::Race do
     end
   end
 
+  def self.it_raises_for(method)
+    context 'and the argument is not an array' do
+      it do
+        expect { subject.send(method, :jill) }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'and the argument is an empty array' do
+      it do
+        expect { subject.send(method, []) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
   describe '#score' do
     subject { described_class.score(guesses, winners) }
 
@@ -92,4 +106,50 @@ RSpec.describe RaceBet::Race do
     end
   end
   # rubocop:enable Metrics/BlockLength
+
+  describe '#sanitize' do
+    subject { described_class.new(guesses, guesses) }
+
+    context 'when valid parameters' do
+      it 'returns unique elements' do
+        expect(subject.send(:sanitize, %i(jill jill jack)))
+          .to eq(%i(jill jack))
+      end
+    end
+
+    context 'when invalid parameters' do
+      it_raises_for :sanitize
+    end
+  end
+
+  describe '#validate' do
+    subject { described_class.new(guesses, guesses) }
+    it_raises_for :validate
+  end
+
+  describe '#exact_hits' do
+    subject { described_class.new(guesses, winners) }
+    let(:winners) { winner_place(1) }
+
+    context 'when an exact hit' do
+      it { expect(subject.send(:exact_hits, guesses[0], 0)).to eq first }
+    end
+
+    context 'when not an exact hit' do
+      it { expect(subject.send(:exact_hits, guesses[0], 2)).to be_zero }
+    end
+  end
+
+  describe '#in_top_5' do
+    subject { described_class.new(guesses, winners) }
+    let(:winners) { winner_place(4) }
+
+    context 'when match is in top 5' do
+      it { expect(subject.send(:in_top_5, guesses[3])).to eq misplaced }
+    end
+
+    context 'when match is not in top 5' do
+      it { expect(subject.send(:in_top_5, guesses[5])).to be_zero }
+    end
+  end
 end
