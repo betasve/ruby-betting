@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 require_relative '../lib/race'
 
 RSpec.describe RaceBet::Race do # rubocop:disable Metrics/BlockLength
