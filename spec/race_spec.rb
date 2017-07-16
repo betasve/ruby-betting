@@ -67,6 +67,7 @@ RSpec.describe RaceBet::Race do # rubocop:disable Metrics/BlockLength
       winners[3], winners[4] = winners[4], winners[3]
       winners
     end
+
     it { expect(subject).to eq(15 + 1) }
   end
 

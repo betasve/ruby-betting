@@ -21,7 +21,7 @@ module RaceBet
     class << self
       def score(guesses, winners)
         bet_score = new(guesses, winners)
-        bet_score.points
+        bet_score.calculate_points
       end
     end
 
@@ -30,11 +30,11 @@ module RaceBet
       @winners = sanitize(winners)
     end
 
-    def points
+    def calculate_points
       total_score = 0
       guesses.each_with_index do |guess, place|
         total_score += exact_hit = exact_hits(guess, place)
-        total_score += top_5s(guess).to_i if exact_hit.zero?
+        total_score += in_top_5(guess) if exact_hit.zero?
       end
 
       total_score
@@ -58,8 +58,9 @@ module RaceBet
       0
     end
 
-    def top_5s(guess)
-      SCORING[:top_5] if winners.index(guess) && winners.index(guess) <= FIFTH
+    def in_top_5(guess)
+      return 0 unless winners.index(guess)&.send(:<=, FIFTH)
+      SCORING[:top_5]
     end
   end
 end
