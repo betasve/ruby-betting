@@ -14,6 +14,10 @@ module RaceBet
       top_5: 1
     }.freeze
 
+    FIFTH = 4
+    NOT_AN_ARRAY = 'Winners is not an array'.freeze
+    EMPTY_ARRAY = 'Winners array is empty'.freeze
+
     class << self
       def score(guesses, winners)
         bet_score = new(guesses, winners)
@@ -40,14 +44,13 @@ module RaceBet
 
     def sanitize(arr)
       validate(arr)
-      # NOTE: Logically - one racer per bet
-      # TODO: Fix some tests  that are failing because of this
+      # NOTE: You can't place multiple bets for one racer
       arr.uniq
     end
 
     def validate(arr)
-      raise ArgumentError, 'Winners - not an array' unless arr.is_a? Array
-      raise ArgumentError, 'Winners are empty' if arr.size.zero?
+      raise ArgumentError, NOT_AN_ARRAY unless arr.is_a? Array
+      raise ArgumentError, EMPTY_ARRAY if arr.size.zero?
     end
 
     def exact_hits(guess, index)
@@ -56,7 +59,7 @@ module RaceBet
     end
 
     def top_5s(guess)
-      SCORING[:top_5] if winners.index(guess) && winners.index(guess) <= 4
+      SCORING[:top_5] if winners.index(guess) && winners.index(guess) <= FIFTH
     end
   end
 end
